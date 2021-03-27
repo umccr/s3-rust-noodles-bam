@@ -5,6 +5,7 @@ authors = ["Roman Valls Guimera <brainstorm@nopcode.org>"]
 edition = "2018"
 
 [dependencies]
+jemallocator = "0.3.0"
 url = "2.1.1"
 serde = "^1"
 serde_derive = "^1"

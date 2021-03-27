@@ -1,10 +1,25 @@
 # Wishlist for improvements in the Rust-AWS tooling ecosystem
 
+The following issues could be legit or just things I don't know (yet) how to do or fix, bear with me ;)
+
 1. Rusoto's [poor performance](https://twitter.com/braincode/status/1375329288732307457) and [precarious maintainership status](https://github.com/rusoto/rusoto/issues/1651)... I am hopeful that [it gets solved soon when AWS hires a dedicated SDK maintainer](https://twitter.com/braincode/status/1371648129154490368)?
 1. Very slow to build and deploy a Rust Lambda (~3min `sam build` + 2min `sam deploy` on a Beta Codespaces instance) and [SAM cli is still lacking good cargo integration on the SAM tooling level](https://twitter.com/braincode/status/1371660403785142273).
 1. [Lack of public Rust-lambda benchmarks](https://twitter.com/robertohuertasm/status/1368991014606757891)... with provided.al2 and with/without [jemallocator](https://lib.rs/crates/jemallocator) activated... BUT `jemalloc` is still not supported on Apple Silicon, so not convenient to work on locally (unless parametrized by `#cfg` or feature flags).
 1. Cannot define a simple S3ReadOnly role on SAM's template.yml itself without pre-creating it through the web console or aws cli?: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources-function.html#sam-specification-generated-resources-function-not-role 
-1. AWS's `sam invoke -e event.json` to work properly, in progress via twitter: https://twitter.com/braincode/status/1375309688573599747
+1. AWS's `sam local invoke -e event.json` to work properly, in progress via twitter: https://twitter.com/braincode/status/1375309688573599747
+1. AWS's `sam local start-api` does not seem to work either, it generates some random looking binary request that is met with a HTTP 400 code as Response:
+```
+$ sam local start-api
+Mounting s3Bam at http://127.0.0.1:3000/ [DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT]
+Mounting s3Bam at http://127.0.0.1:3000/{proxy+} [DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT]
+You can now browse to the above endpoints to invoke your functions. You do not need to restart/reload SAM CLI while working on your functions, changes will be reflected instantly/automatically. You only need to restart SAM CLI if you update your AWS SAM template
+2021-03-27 14:12:27  * Running on http://127.0.0.1:3000/ (Press CTRL+C to quit)
+2021-03-27 14:12:30 127.0.0.1 - - [27/Mar/2021 14:12:30] code 400, message Bad request version ("Ös;ìs\x9b`¢×\x90+Á\x97\x17>Xmá\x1a~~R;&lì\x908ý·\x91\x97\x00>\x13\x02\x13\x03\x13\x01À,À0\x00\x9fÌ©Ì¨ÌªÀ+À/\x00\x9eÀ$À(\x00kÀ#À'\x00gÀ")
+¢×>Xmá~~R;&lì·>À,À0©Ì¨ÌªÀ+À/$À(kÀ#À'gÀ" HTTPStatus.BAD_REQUEST -Õ]å[oómÚÞE0¹]R£E+X× Ös;ìs
+2021-03-27 14:12:30 127.0.0.1 - - [27/Mar/2021 14:12:30] code 400, message Bad request version ("Ô\x86S\x00>\x13\x02\x13\x03\x13\x01À,À0\x00\x9fÌ©Ì¨ÌªÀ+À/\x00\x9eÀ$À(\x00kÀ#À'\x00gÀ")
+2021-03-27 14:12:30 127.0.0.1 - - [27/Mar/2021 14:12:30] "2.Û¼/æI4Í2À¡¿â
+\kÁ3Á q}F a@é ½FÇÙLäÊÕåÚ°zm3?$NÖÂø ÔS>À,À0©Ì¨ÌªÀ+À/$À(kÀ#À'gÀ" HTTPStatus.BAD_REQUEST -
+```
 1. Cannot cross-compile `ring` dependency on an Apple Silicon mac (perhaps related to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=21098):
 
 ```rust
