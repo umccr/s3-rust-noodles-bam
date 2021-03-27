@@ -1,8 +1,8 @@
 # Wishlist for improvements in the Rust-AWS tooling ecosystem
 
-1. Rusoto's [poor performance](https://twitter.com/braincode/status/1375329288732307457) and [precarious maintainership status](https://github.com/rusoto/rusoto/issues/1651)... hopefull [gets solved soon]()?
+1. Rusoto's [poor performance](https://twitter.com/braincode/status/1375329288732307457) and [precarious maintainership status](https://github.com/rusoto/rusoto/issues/1651)... I am hopeful that [it gets solved soon when AWS hires a dedicated SDK maintainer](https://twitter.com/braincode/status/1371648129154490368)?
 1. Very slow to build and deploy a Rust Lambda (~3min `sam build` + 2min `sam deploy` on a Beta Codespaces instance) and [SAM cli is still lacking good cargo integration on the SAM tooling level](https://twitter.com/braincode/status/1371660403785142273).
-1. [Lack of public Rust-lambda benchmarks](https://twitter.com/robertohuertasm/status/1368991014606757891)... with provided.al2 and with/without [jemallocator](https://lib.rs/crates/jemallocator) activated.
+1. [Lack of public Rust-lambda benchmarks](https://twitter.com/robertohuertasm/status/1368991014606757891)... with provided.al2 and with/without [jemallocator](https://lib.rs/crates/jemallocator) activated... BUT `jemalloc` is still not supported on Apple Silicon, so not convenient to work on locally (unless parametrized by `#cfg` or feature flags).
 1. Cannot define a simple S3ReadOnly role on SAM's template.yml itself without pre-creating it through the web console or aws cli?: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources-function.html#sam-specification-generated-resources-function-not-role 
 1. AWS's `sam invoke -e event.json` to work properly, in progress via twitter: https://twitter.com/braincode/status/1375309688573599747
 1. Cannot cross-compile `ring` dependency on an Apple Silicon mac (perhaps related to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=21098):
