@@ -1,6 +1,6 @@
 # Read BAM header on an AWS lambda with Noodles
 
-This small Bioinformatics proof of concept that bundles [noodles](http://github.com/zaeleus/noodles) into an AWS Lambda. 
+This is a small Bioinformatics proof of concept that bundles [noodles](http://github.com/zaeleus/noodles) into an AWS Lambda.
 
 A previous lambda was written using the C-bindgen-based [rust-htslib](https://github.com/brainstorm/s3-rust-htslib-bam). This iteration gets rid of the `unsafe` interfacing with the C-based [htslib](https://github.com/samtools/htslib) along with other [problematic dependencies such as OpenSSL](https://www.openssl.org/news/vulnerabilities.html) (in favour of the [independently audited RustLS counterpart](http://jbp.io/2020/06/14/rustls-audit.html)).
 
