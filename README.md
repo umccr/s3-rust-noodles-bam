@@ -1,28 +1,22 @@
 # Read BAM header on an AWS lambda with Noodles
 
-This small Bioinformatics proof of concept that bundles [noodles](http://github.com/zaeleus/noodles) into an AWS Lambda for massive distributed computing. This only prints a BAM header, but I hope you see the massive scaling potential, hitting an S3 bucket with millions of concurrent lambdas will be interesting to see ;)
+This small Bioinformatics proof of concept that bundles [noodles](http://github.com/zaeleus/noodles) into an AWS Lambda. 
 
-To make this work, this README assumes the following prerequisites:
+A previous lambda was written using the C-bindgen-based [rust-htslib](https://github.com/brainstorm/s3-rust-htslib-bam). This iteration gets rid of the `unsafe` interfacing with the C-based [htslib](https://github.com/samtools/htslib) along with other [problematic dependencies such as OpenSSL](https://www.openssl.org/news/vulnerabilities.html) (in favour of the [independently audited RustLS counterpart](http://jbp.io/2020/06/14/rustls-audit.html)).
+
+# Quickstart
+
+This README assumes the following prerequisites:
 
 1. You are already authenticated against AWS (with either environment credentials or AWS_PROFILE set) - in an
      account that you can deploy CloudFormation stacks/lambdas.
 2. [AWS SAM](https://aws.amazon.com/serverless/sam/) is properly installed.
-3. You have a [functioning Rust(up) installation](https://rustup.rs/),
-     docker and [`cross`](https://github.com/rust-embedded/cross).
+3. You have a [functioning Rust(up) installation](https://rustup.rs/).
 
-If that is in order, clone this repository.
-
-Building the Rust binaries can be done via `cargo`, as usual:
+Building and deploying the Rust lambda can be done via [SAM-CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html):
 
 ```
-$ cargo build --release --target x86_64-unknown-linux-gnu
-```
-
-And then invoke or deploy the resulting `bootstrap` binary:
-
-```
-$ cp ./target/x86_64-unknown-linux-gnu/release/bootstrap .
-$ sam local invoke -e event.json
+$ sam build && sam deploy
 ```
 
 The output will show both the status of the lambda invoke - and if successful, the header records from the BAM file, i.e:
