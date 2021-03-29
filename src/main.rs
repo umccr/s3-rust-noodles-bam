@@ -16,6 +16,7 @@ use s3::creds::Credentials;
 use s3::region::Region;
 
 use noodles_bam as bam;
+use noodles_sam as sam;
 
 struct Storage {
     region: Region,
@@ -57,7 +58,10 @@ async fn stream_s3_object() -> Result<Cursor<Vec<u8>>, Error> {
 /// Reads BAM S3 object header
 async fn read_bam_header(bam_bytes: Cursor<Vec<u8>>) -> Result<Value, Error> {
     let mut reader = bam::Reader::new(bam_bytes);
-    let header = reader.read_header()?;
-    Ok(json!({ "header": header,
+    let raw_header = reader.read_header()?;
+    let header: sam::Header = raw_header.parse()?;
+    println!("{}", header);
+
+    Ok(json!({ "header": "TBD: Header to be serialized, see https://github.com/brainstorm/s3-rust-htslib-bam/commit/9e7a2002e3d31ac40c87bdad59a4af371b26518f#commitcomment-48811697",
                "message": "success" }))
 }

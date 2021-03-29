@@ -11,6 +11,9 @@ Resources:
       MemorySize: 128
       Timeout: 30
       CodeUri: .
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AmazonS3ReadOnlyAccess
       Tags:
         "Creator": "brainstorm"
         "Deploy": "sam"
