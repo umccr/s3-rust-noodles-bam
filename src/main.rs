@@ -3,26 +3,25 @@ extern crate jemallocator;
 #[global_allocator]
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
-use std::io::Cursor;
+use std::io::{Cursor, Bytes};
 
 use lambda_runtime::{ handler_fn, Context, Error };
-//use serde::{Deserialize, Serialize};
 use serde_json::{ json, Value };
-use simple_logger::SimpleLogger;
-use log::LevelFilter;
 
-use s3::bucket::Bucket;
-use s3::creds::Credentials;
-use s3::region::Region;
+use aws_sdk_s3 as s3;
+use s3::Region;
+
+use tracing_subscriber::fmt::format::FmtSpan;
+use tracing_subscriber::fmt::SubscriberBuilder;
 
 use noodles_bam as bam;
 use noodles_sam as sam;
 
-struct Storage {
-    region: Region,
-    credentials: Credentials,
-    bucket: String,
-}
+// Change these to your bucket, key and region
+const BUCKET: &str = "";
+const KEY: &str = "/htsget/htsnexus_test_NA12878.bam";
+const REGION: &str = "ap-southeast-2";
+
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -31,8 +30,6 @@ async fn main() -> Result<(), Error> {
 }
 
 async fn s3_read_bam_header(_event: Value, _ctx: Context) -> Result<Value, Error> {
-    SimpleLogger::new().with_level(LevelFilter::Info).init().unwrap();
-
     let s3_object = stream_s3_object().await?;
     let output = read_bam_header(s3_object).await?;
     dbg!(&output);
@@ -40,24 +37,28 @@ async fn s3_read_bam_header(_event: Value, _ctx: Context) -> Result<Value, Error
 }
 
 /// Fetches S3 object
-async fn stream_s3_object() -> Result<Cursor<Vec<u8>>, Error> {
-    let mut s3_obj_buffer = Cursor::new(Vec::new());
-    let aws = Storage {
-        region: Region::ApSoutheast2,
-        credentials: Credentials::default()?,
-        bucket: "umccr-research-dev".to_string(),
-    };
+async fn stream_s3_object() -> Result<Cursor<Bytes<u8>>, Error> {
+    SubscriberBuilder::default()
+        .with_env_filter("info")
+        .with_span_events(FmtSpan::CLOSE)
+        .init();
+    let conf = s3::Config::builder()
+        .region(Region::new(REGION))
+        .build();
+    let client = s3::Client::from_conf(conf);
 
-    let bucket = Bucket::new(&aws.bucket, aws.region, aws.credentials)?;
-    bucket.get_object_stream("/htsget/htsnexus_test_NA12878.bam", &mut s3_obj_buffer).await?;
-    // Rewind buffer Cursor after writing, so that next reader can consume data 
+    let resp = client.get_object().bucket(BUCKET).key(KEY).send().await?;
+    let data = resp.body.collect().await?;
+
+    // Rewind buffer Cursor after writing, so that next reader can consume data
+    let mut s3_obj_buffer = Cursor::new(&data.into_bytes());
     s3_obj_buffer.set_position(0);
     return Ok(s3_obj_buffer);
 }
 
 /// Reads BAM S3 object header
-async fn read_bam_header(bam_bytes: Cursor<Vec<u8>>) -> Result<Value, Error> {
-    let mut reader = bam::Reader::new(bam_bytes);
+async fn read_bam_header(bam_bytes: Cursor<Bytes<u8>>) -> Result<Value, Error> {
+    let mut reader = bam::Reader::new(bam_bytes.into());
     let raw_header = reader.read_header()?;
     let header: sam::Header = raw_header.parse()?;
     println!("{}", header);
