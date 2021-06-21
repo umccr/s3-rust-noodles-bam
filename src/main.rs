@@ -3,7 +3,8 @@ extern crate jemallocator;
 #[global_allocator]
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
-use std::io::{Cursor, Bytes};
+use bytes::Bytes;
+use std::io::{Cursor};
 
 use lambda_runtime::{ handler_fn, Context, Error };
 use serde_json::{ json, Value };
@@ -37,7 +38,7 @@ async fn s3_read_bam_header(_event: Value, _ctx: Context) -> Result<Value, Error
 }
 
 /// Fetches S3 object
-async fn stream_s3_object() -> Result<Cursor<Bytes<u8>>, Error> {
+async fn stream_s3_object() -> Result<Bytes, Error> {
     SubscriberBuilder::default()
         .with_env_filter("info")
         .with_span_events(FmtSpan::CLOSE)
@@ -50,15 +51,17 @@ async fn stream_s3_object() -> Result<Cursor<Bytes<u8>>, Error> {
     let resp = client.get_object().bucket(BUCKET).key(KEY).send().await?;
     let data = resp.body.collect().await?;
 
-    // Rewind buffer Cursor after writing, so that next reader can consume data
-    let mut s3_obj_buffer = Cursor::new(&data.into_bytes());
-    s3_obj_buffer.set_position(0);
-    return Ok(s3_obj_buffer);
+    return Ok(data.into_bytes());
 }
 
 /// Reads BAM S3 object header
-async fn read_bam_header(bam_bytes: Cursor<Bytes<u8>>) -> Result<Value, Error> {
-    let mut reader = bam::Reader::new(bam_bytes.into());
+async fn read_bam_header(bam_bytes: Bytes) -> Result<Value, Error> {
+    let mut s3_obj_buffer = Cursor::new(bam_bytes.to_vec());
+    // Rewind buffer Cursor after writing, so that next reader can consume header data...
+    s3_obj_buffer.set_position(0);
+
+    // ... and read the header
+    let mut reader = bam::Reader::new(s3_obj_buffer);
     let raw_header = reader.read_header()?;
     let header: sam::Header = raw_header.parse()?;
     println!("{}", header);
