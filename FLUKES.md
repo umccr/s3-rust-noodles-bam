@@ -2,6 +2,8 @@
 
 The following issues could be legit or just things I don't know (yet) how to do or fix, bear with me ;)
 
+1. Local running of lambdas is still a moving target with SAM CLI?: https://github.com/awslabs/aws-lambda-rust-runtime/pull/332#issuecomment-864435051
+   1. Although there are some PoCs and workarounds from 3rd parties: https://github.com/pepoviola/tide-lambda-listener-example
 1. Rusoto's [poor performance](https://twitter.com/braincode/status/1375329288732307457) and [precarious maintainership status](https://github.com/rusoto/rusoto/issues/1651)... I am hopeful that [it gets solved soon when AWS hires a dedicated SDK maintainer](https://twitter.com/braincode/status/1371648129154490368)?
 1. Very slow to build and deploy a Rust Lambda (~3min `sam build` + 2min `sam deploy` on a Beta Codespaces instance) and [SAM cli is still lacking good cargo integration on the SAM tooling level](https://twitter.com/braincode/status/1371660403785142273). Ideally, from a DX standpoint, a lambda should be as easy to deploy as:
 ```
@@ -23,7 +25,7 @@ You can now browse to the above endpoints to invoke your functions. You do not n
 2021-03-27 14:12:30 127.0.0.1 - - [27/Mar/2021 14:12:30] "2.Û¼/æI4Í2À¡¿â
 \kÁ3Á q}F a@é ½FÇÙLäÊÕåÚ°zm3?$NÖÂø ÔS>À,À0©Ì¨ÌªÀ+À/$À(kÀ#À'gÀ" HTTPStatus.BAD_REQUEST -
 ```
-1. Cannot cross-compile `ring` dependency on an Apple Silicon mac (perhaps related to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=21098):
+1. Cannot cross-compile `ring` dependency on an Apple Silicon, perhaps it'll need cross?
 
 ```rust
 % cargo build --release --target x86_64-unknown-linux-gnu
