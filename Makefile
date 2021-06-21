@@ -10,4 +10,4 @@ build-s3Bam:
 #
 # Auto (arch determined by compile host)... only works with x86_64-unknown-linux-gnu because it's what lambda runtime is in production
 	cargo build --release
-	cp ./target/debug/bootstrap $(ARTIFACTS_DIR)
+	cp ./target/release/bootstrap $(ARTIFACTS_DIR)
