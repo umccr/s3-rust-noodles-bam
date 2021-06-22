@@ -5,20 +5,19 @@ authors = ["Roman Valls Guimera <brainstorm@nopcode.org>"]
 edition = "2018"
 
 [dependencies]
+bytes = "1.0.1"
 jemallocator = "0.3.0"
 url = "2.1.1"
 serde = "^1"
 serde_derive = "^1"
 serde_json = "^1"
 lambda_runtime = "0.3.0"
-#rusoto_core = "0.46.0"
-#rusoto_s3 = "0.46.0"
-rust-s3 = { default-features = false, version = "0.27.0-beta11", features = ["tokio-rustls-tls"] }
+aws-sdk-s3 = { git = "https://github.com/awslabs/aws-sdk-rust", tag = "v0.0.8-alpha" }
+tracing-subscriber = "0.2.18"
+
 tokio = { version = "1.4.0" }
 noodles-bam = { git = "https://github.com/zaeleus/noodles" }
 noodles-sam = { git = "https://github.com/zaeleus/noodles" }
-simple_logger = "1.11.0"
-log = "0.4.14"
 
 
 [[ bin ]]
