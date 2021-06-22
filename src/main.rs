@@ -19,8 +19,8 @@ use noodles_bam as bam;
 use noodles_sam as sam;
 
 // Change these to your bucket, key and region
-const BUCKET: &str = "";
-const KEY: &str = "/htsget/htsnexus_test_NA12878.bam";
+const BUCKET: &str = "umccr-research-dev";
+const KEY: &str = "htsget/htsnexus_test_NA12878.bam";
 const REGION: &str = "ap-southeast-2";
 
 
