@@ -25,7 +25,7 @@ You can now browse to the above endpoints to invoke your functions. You do not n
 2021-03-27 14:12:30 127.0.0.1 - - [27/Mar/2021 14:12:30] "2.Û¼/æI4Í2À¡¿â
 \kÁ3Á q}F a@é ½FÇÙLäÊÕåÚ°zm3?$NÖÂø ÔS>À,À0©Ì¨ÌªÀ+À/$À(kÀ#À'gÀ" HTTPStatus.BAD_REQUEST -
 ```
-1. Cannot cross-compile `ring` dependency on an Apple Silicon, perhaps it'll need cross?
+1. Cannot cross-compile `ring` dependency on an Apple Silicon while still being able to deploy on AWS (x86_64-unknown_linux_gnu), see error:
 
 ```rust
 % cargo build --release --target x86_64-unknown-linux-gnu
