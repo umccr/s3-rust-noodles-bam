@@ -12,6 +12,7 @@ This README assumes the following prerequisites:
      account that you can deploy CloudFormation stacks/lambdas.
 2. [AWS SAM](https://aws.amazon.com/serverless/sam/) is properly installed.
 3. You have a [functioning Rust(up) installation](https://rustup.rs/).
+4. You can compile for `x86_64-unknown-linux`, [Apple Silicon is not supported](https://github.com/umccr/s3-rust-noodles-bam/blob/master/FLUKES.md).
 4. You have adjusted the KEY, BUCKET, REGION constants in `main.rs`
 
 Building and deploying the Rust lambda can be done via [SAM-CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html):
