@@ -4,13 +4,11 @@ The following issues could be legit or just things I don't know (yet) how to do 
 
 1. Local running of lambdas is still a moving target with SAM CLI?: https://github.com/awslabs/aws-lambda-rust-runtime/pull/332#issuecomment-864435051
    1. Although there are some PoCs and workarounds from 3rd parties: https://github.com/pepoviola/tide-lambda-listener-example
-1. Rusoto's [poor performance](https://twitter.com/braincode/status/1375329288732307457) and [precarious maintainership status](https://github.com/rusoto/rusoto/issues/1651)... I am hopeful that [it gets solved soon when AWS hires a dedicated SDK maintainer](https://twitter.com/braincode/status/1371648129154490368)?
 1. Very slow to build and deploy a Rust Lambda (~3min `sam build` + 2min `sam deploy` on a Beta Codespaces instance) and [SAM cli is still lacking good cargo integration on the SAM tooling level](https://twitter.com/braincode/status/1371660403785142273). Ideally, from a DX standpoint, a lambda should be as easy to deploy as:
 ```
 $ cargo aws deploy
 ```
 Keeping the SAM-CLI `template.yml` or even more conveniently, adding a section to `Cargo.toml` that mirrors the SAM spec but the same SAM tooling runs underneath, without staying on the (Rust) way as it is now...  Or similar.
-1. [Lack of public Rust-lambda benchmarks](https://twitter.com/robertohuertasm/status/1368991014606757891)... with provided.al2 and with/without [jemallocator](https://lib.rs/crates/jemallocator) activated... BUT if you are cross-compiling on an M1 to x86_64 target, `jemalloc` is still not supported on Apple Silicon, so not convenient to work on locally (unless parametrized by `#cfg` or feature flags or custom `build.rs` in the meantime?).
 1. AWS's `sam local invoke -e event.json` to work properly, in progress via twitter: https://twitter.com/braincode/status/1375309688573599747
 1. AWS's `sam local start-api` does not seem to work either, it generates some random looking binary request that is met with a HTTP 400 code as Response:
 ```
