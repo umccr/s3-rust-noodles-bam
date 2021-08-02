@@ -20,6 +20,8 @@ noodles-sam = { git = "https://github.com/zaeleus/noodles" }
 simple_logger = "1.11.0"
 log = "0.4.14"
 
+[dev-dependencies]
+s3-server = "0.0.1"
 
 [[ bin ]]
 name = "bootstrap"
