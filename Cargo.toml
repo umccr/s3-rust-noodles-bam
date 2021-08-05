@@ -11,14 +11,16 @@ url = "2.1.1"
 serde = "^1"
 serde_derive = "^1"
 serde_json = "^1"
-lambda_runtime = { git = "https://github.com/awslabs/aws-lambda-rust-runtime", rev = "7e2cd97b37436234c621dd6057ea99497ebd5c96"}
-aws-sdk-s3 = { git = "https://github.com/awslabs/aws-sdk-rust", tag = "v0.0.9-alpha" }
+lambda_runtime = { version = 0.3.1 }
+aws-sdk-s3 = { git = "https://github.com/awslabs/aws-sdk-rust", tag = "v0.0.14-alpha" }
 tracing-subscriber = "0.2.18"
 
 tokio = { version = "1.7.1" }
 noodles-bam = { git = "https://github.com/zaeleus/noodles" }
 noodles-sam = { git = "https://github.com/zaeleus/noodles" }
 
+[dev-dependencies]
+s3-server = "0.0.1"
 
 [[ bin ]]
 name = "bootstrap"
