@@ -15,8 +15,8 @@ use s3::Region;
 use tracing_subscriber::fmt::format::FmtSpan;
 use tracing_subscriber::fmt::SubscriberBuilder;
 
-use noodles_bam as bam;
-use noodles_sam as sam;
+use noodles::bam;
+use noodles::sam;
 
 // Change these to your bucket, key and region
 const BUCKET: &str = "umccr-research-dev";
@@ -62,8 +62,7 @@ async fn read_bam_header(bam_bytes: Bytes) -> Result<Value, Error> {
 
     // ... and read the header
     let mut reader = bam::Reader::new(s3_obj_buffer);
-    let raw_header = reader.read_header()?;
-    let header: sam::Header = raw_header.parse()?;
+    let header = reader.read_header()?.parse::<sam::Header>()?;
     println!("{}", header);
 
     Ok(json!({ "header": "TBD: Header to be serialized, see https://github.com/brainstorm/s3-rust-htslib-bam/commit/9e7a2002e3d31ac40c87bdad59a4af371b26518f#commitcomment-48811697",
