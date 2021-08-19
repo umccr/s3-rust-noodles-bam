@@ -13,7 +13,8 @@ This README assumes the following prerequisites:
 2. [AWS SAM](https://aws.amazon.com/serverless/sam/) is properly installed.
 3. You have a [functioning Rust(up) installation](https://rustup.rs/).
 4. You can compile for `x86_64-unknown-linux`, [Apple Silicon is not supported](https://github.com/umccr/s3-rust-noodles-bam/blob/master/FLUKES.md).
-4. You have adjusted the KEY, BUCKET, REGION constants in `main.rs`
+5. You have adjusted the KEY, BUCKET, REGION constants in `main.rs`
+6. You have [s3-server](github.com/datenlord/s3-server) or [localstack](https://stackoverflow.com/questions/57392422/how-to-run-a-aws-lambda-via-sam-local-that-writes-to-an-s3-bucket) installed and configured (only if you are developing or testing locally).
 
 Building and deploying the Rust lambda can be done via [SAM-CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html):
 
