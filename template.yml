@@ -9,6 +9,7 @@ Resources:
       Handler: bootstrap.is.real.handler
       Runtime: provided.al2
       MemorySize: 128
+      Architectures: ["arm64"]
       Timeout: 30
       CodeUri: .
       Policies:
