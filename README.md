@@ -8,19 +8,20 @@ A previous lambda was written using the C-bindgen-based [rust-htslib](https://gi
 
 This README assumes the following prerequisites:
 
-1. You are already authenticated against AWS (with either environment credentials or AWS_PROFILE set) - in an
-     account that you can deploy CloudFormation stacks/lambdas.
-2. [AWS SAM](https://aws.amazon.com/serverless/sam/) is properly installed.
-3. You have a [functioning Rust(up) installation](https://rustup.rs/).
-4. You can compile for `x86_64-unknown-linux`, [Apple Silicon is not supported](https://github.com/umccr/s3-rust-noodles-bam/blob/master/FLUKES.md).
-5. You have adjusted the KEY, BUCKET, REGION constants in `main.rs`
-6. You have [s3-server](github.com/datenlord/s3-server) or [localstack](https://stackoverflow.com/questions/57392422/how-to-run-a-aws-lambda-via-sam-local-that-writes-to-an-s3-bucket) installed and configured (only if you are developing or testing locally).
+1. You are already authenticated against AWS in your shell.
+1. [AWS SAM](https://aws.amazon.com/serverless/sam/) is properly installed.
+1. You have a [functioning Rust(up) installation](https://rustup.rs/).
+1. You have adjusted the KEY, BUCKET, REGION constants in `main.rs`
 
-Building and deploying the Rust lambda can be done via [SAM-CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html):
+Building and deploying the Rust lambda on ARM64 (Graviton2 instances) can be done via [SAM-CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html). But first you must build a docker image:
 
 ```
-$ sam build && sam deploy
+$ docker build -t provided.al2-rust . -f Dockerfile.provided-al2
+$ sam build -u -bi provided.al2-rust
+$ sam deploy
 ```
+
+**Unfortunately local debugging via "sam local invoke -e events.json" or "sam local start-api" does not work yet.**
 
 Then actually call the lambda through the API Gateway (found easily on API Gateway's dashboard):
 
