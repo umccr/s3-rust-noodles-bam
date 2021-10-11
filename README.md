@@ -13,7 +13,7 @@ This README assumes the following prerequisites:
 1. You have a [functioning Rust(up) installation](https://rustup.rs/).
 1. You have adjusted the KEY, BUCKET, REGION constants in `main.rs`
 
-Building and deploying the Rust lambda on ARM64 (Graviton2 instances) can be done via [SAM-CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html). But first you must build a docker image:
+Building and deploying the Rust lambda on ARM64 (Graviton2 instances) can be done via [SAM-CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html). But first you must build a docker image and build this example using that container based on upstream's `public.ecr.aws/sam/build-provided.al2:latest`:
 
 ```
 $ docker build -t provided.al2-rust . -f Dockerfile-provided.al2
