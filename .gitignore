@@ -5,6 +5,7 @@ cdk.out
 .aws-sam
 .nvmrc
 response.json
+samconfig.toml
 node_modules
 bootstrap
 Cargo.lock

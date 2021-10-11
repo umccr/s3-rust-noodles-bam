@@ -21,9 +21,27 @@ $ sam build -c -u --skip-pull-image -bi provided.al2-rust
 $ sam deploy
 ```
 
-**Unfortunately local debugging via "sam local invoke -e events.json" or "sam local start-api" does not work yet.**
+Debugging locally works but there are some credential provider management left to address:
 
-Then actually call the lambda through the API Gateway (found easily on API Gateway's dashboard):
+```
+% sam local start-api
+Mounting s3Bam at http://127.0.0.1:3000/{proxy+} [DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT]
+Mounting s3Bam at http://127.0.0.1:3000/ [DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT]
+You can now browse to the above endpoints to invoke your functions. You do not need to restart/reload SAM CLI while working on your functions, changes will be reflected instantly/automatically. You only need to restart SAM CLI if you update your AWS SAM template
+2021-10-11 15:25:29  * Running on http://127.0.0.1:3000/ (Press CTRL+C to quit)
+Invoking bootstrap (provided.al2)
+Skip pulling image and use local one: public.ecr.aws/sam/emulation-provided.al2:rapid-1.33.0-arm64.
+
+Mounting /Users/rvalls/dev/umccr/s3-rust-noodles-bam/.aws-sam/build/s3Bam as /var/task:ro,delegated inside runtime container
+START RequestId: 9b14bf12-6ef7-4e95-b98c-c7821ba00509 Version: $LATEST
+END RequestId: 9b14bf12-6ef7-4e95-b98c-c7821ba00509
+REPORT RequestId: 9b14bf12-6ef7-4e95-b98c-c7821ba00509  Init Duration: 1.31 ms  Duration: 185.67 ms     Billed Duration: 200 ms Memory Size: 128 MB     Max Memory Used: 128 MB
+Lambda returned empty body!
+Invalid lambda response received: Invalid API Gateway Response Keys: {'errorType', 'errorMessage'} in {'errorType': '&alloc::boxed::Box<dyn std::error::Error+core::marker::Send+core::marker::Sync>', 'errorMessage': 'failed to construct request: No credentials in the property bag'}
+2021-10-11 15:25:39 127.0.0.1 - - [11/Oct/2021 15:25:39] "GET / HTTP/1.1" 502 -
+```
+
+Then actually call the lambda through the API Gateway in production (found easily on API Gateway's dashboard):
 
 ```
 curl https://api.gateway.<RANDOM_AWS_ID>.domain.amazon.com/Prod
