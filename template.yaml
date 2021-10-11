@@ -1,3 +1,4 @@
+AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Resources:
   s3Bam:
@@ -6,10 +7,10 @@ Resources:
       BuildMethod: makefile
     Properties:
       FunctionName: s3Bam
-      Handler: bootstrap.is.real.handler
+      Handler: bootstrap
       Runtime: provided.al2
       MemorySize: 128
-      Architectures: ["x86_64"]
+      Architectures: ["arm64"]
       Timeout: 30
       CodeUri: .
       Policies:

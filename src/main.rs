@@ -12,8 +12,8 @@ use serde_json::{ json, Value };
 use aws_sdk_s3 as s3;
 use s3::Region;
 
-use tracing_subscriber::fmt::format::FmtSpan;
-use tracing_subscriber::fmt::SubscriberBuilder;
+// use tracing_subscriber::fmt::format::FmtSpan;
+// use tracing_subscriber::fmt::SubscriberBuilder;
 
 use noodles::bam;
 use noodles::sam;
@@ -26,6 +26,11 @@ const REGION: &str = "ap-southeast-2";
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+    // SubscriberBuilder::default()
+    // .with_env_filter("info")
+    // .with_span_events(FmtSpan::CLOSE)
+    // .init();
+
     lambda_runtime::run(handler_fn(s3_read_bam_header)).await?;
     Ok(())
 }
@@ -39,10 +44,6 @@ async fn s3_read_bam_header(_event: Value, _ctx: Context) -> Result<Value, Error
 
 /// Fetches S3 object
 async fn stream_s3_object() -> Result<Bytes, Error> {
-    SubscriberBuilder::default()
-        .with_env_filter("info")
-        .with_span_events(FmtSpan::CLOSE)
-        .init();
     let conf = s3::Config::builder()
         .region(Region::new(REGION))
         .build();
@@ -63,8 +64,7 @@ async fn read_bam_header(bam_bytes: Bytes) -> Result<Value, Error> {
     // ... and read the header
     let mut reader = bam::Reader::new(s3_obj_buffer);
     let header = reader.read_header()?.parse::<sam::Header>()?;
-    println!("{}", header);
 
-    Ok(json!({ "header": "TBD: Header to be serialized, see https://github.com/brainstorm/s3-rust-htslib-bam/commit/9e7a2002e3d31ac40c87bdad59a4af371b26518f#commitcomment-48811697",
+    Ok(json!({ "header": header.to_string(),
                "message": "success" }))
 }

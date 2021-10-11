@@ -16,8 +16,8 @@ This README assumes the following prerequisites:
 Building and deploying the Rust lambda on ARM64 (Graviton2 instances) can be done via [SAM-CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html). But first you must build a docker image:
 
 ```
-$ docker build -t provided.al2-rust . -f Dockerfile.provided-al2
-$ sam build -u -bi provided.al2-rust
+$ docker build -t provided.al2-rust . -f Dockerfile-provided.al2
+$ sam build -c -u --skip-pull-image -bi provided.al2-rust
 $ sam deploy
 ```
 

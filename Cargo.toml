@@ -5,17 +5,17 @@ authors = ["Roman Valls Guimera <brainstorm@nopcode.org>"]
 edition = "2018"
 
 [dependencies]
-bytes = "1.0.1"
-jemallocator = "0.3.0"
-url = "2.1.1"
+bytes = "1.1.0"
+jemallocator = "0.3.2"
+url = "2.2.2"
 serde = "^1"
 serde_derive = "^1"
 serde_json = "^1"
-lambda_runtime = { version = "0.4.0" }
+lambda_runtime = { version = "0.4.1" }
 aws-sdk-s3 = { git = "https://github.com/awslabs/aws-sdk-rust", tag = "v0.0.19-alpha" }
-tracing-subscriber = "0.2.18"
+tracing-subscriber = "0.2.25"
 
-tokio = { version = "1.7.1" }
+tokio = { version = "1.12.0" }
 noodles = { version = "0.10.1", features = ["bam", "sam"] }
 
 [dev-dependencies]
