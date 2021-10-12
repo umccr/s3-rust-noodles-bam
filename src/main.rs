@@ -9,6 +9,7 @@ use std::io::{Cursor};
 use lambda_runtime::{ handler_fn, Context, Error };
 use serde_json::{ json, Value };
 
+use aws_config::default_provider::credentials::DefaultCredentialsChain;
 use aws_sdk_s3 as s3;
 use s3::Region;
 
@@ -44,8 +45,13 @@ async fn s3_read_bam_header(_event: Value, _ctx: Context) -> Result<Value, Error
 
 /// Fetches S3 object
 async fn stream_s3_object() -> Result<Bytes, Error> {
+    let creds_provider = DefaultCredentialsChain::builder()
+            .region(Region::new(REGION))
+            .build().await;
+
     let conf = s3::Config::builder()
         .region(Region::new(REGION))
+        .credentials_provider(creds_provider)
         .build();
     let client = s3::Client::from_conf(conf);
 
