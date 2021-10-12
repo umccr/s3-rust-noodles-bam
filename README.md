@@ -21,25 +21,7 @@ $ sam build -c -u --skip-pull-image -bi provided.al2-rust
 $ sam deploy
 ```
 
-Debugging locally works but there are some credential provider management left to address:
-
-```
-% sam local start-api
-Mounting s3Bam at http://127.0.0.1:3000/{proxy+} [DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT]
-Mounting s3Bam at http://127.0.0.1:3000/ [DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT]
-You can now browse to the above endpoints to invoke your functions. You do not need to restart/reload SAM CLI while working on your functions, changes will be reflected instantly/automatically. You only need to restart SAM CLI if you update your AWS SAM template
-2021-10-11 15:25:29  * Running on http://127.0.0.1:3000/ (Press CTRL+C to quit)
-Invoking bootstrap (provided.al2)
-Skip pulling image and use local one: public.ecr.aws/sam/emulation-provided.al2:rapid-1.33.0-arm64.
-
-Mounting /Users/rvalls/dev/umccr/s3-rust-noodles-bam/.aws-sam/build/s3Bam as /var/task:ro,delegated inside runtime container
-START RequestId: 9b14bf12-6ef7-4e95-b98c-c7821ba00509 Version: $LATEST
-END RequestId: 9b14bf12-6ef7-4e95-b98c-c7821ba00509
-REPORT RequestId: 9b14bf12-6ef7-4e95-b98c-c7821ba00509  Init Duration: 1.31 ms  Duration: 185.67 ms     Billed Duration: 200 ms Memory Size: 128 MB     Max Memory Used: 128 MB
-Lambda returned empty body!
-Invalid lambda response received: Invalid API Gateway Response Keys: {'errorType', 'errorMessage'} in {'errorType': '&alloc::boxed::Box<dyn std::error::Error+core::marker::Send+core::marker::Sync>', 'errorMessage': 'failed to construct request: No credentials in the property bag'}
-2021-10-11 15:25:39 127.0.0.1 - - [11/Oct/2021 15:25:39] "GET / HTTP/1.1" 502 -
-```
+Debugging locally works using `sam local start-api`.
 
 Then actually call the lambda through the API Gateway in production (found easily on API Gateway's dashboard):
 
@@ -47,14 +29,10 @@ Then actually call the lambda through the API Gateway in production (found easil
 curl https://api.gateway.<RANDOM_AWS_ID>.domain.amazon.com/Prod
 ```
 
-If successful, you should see the header records from the BAM file in CloudWatch and the output of API Gateway JSON response:
+If successful, you should see the header records with `curl`, i.e with `sam local start-api` running locally:
 
 ```
-END RequestId: dbd528c7-858d-15e7-6067-9723ce1e643f
-REPORT RequestId: dbd528c7-858d-15e7-6067-9723ce1e643f  Init Duration: 139.11 ms        Duration: 2251.32 ms    Billed Duration: 2300 ms      M
-emory Size: 128 MB      Max Memory Used: 13 MB
-
-[
+$ curl http://127.0.0.1:3000/
 (...)
 "@SQ\tSN:HLA-DRB1*04:03:01\tLN:15246\tAS:GRCh38\tM5:ce0de8afd561fb1fb0d3acce94386a27\tUR:ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/GRCh38_reference_genome/GRCh38_full_analysis_set_plus_decoy_hla.fa\tSP:Human",
 "@SQ\tSN:HLA-DRB1*07:01:01:01\tLN:16110\tAS:GRCh38\tM5:4063054a8189fbc81248b0f37b8273fd\tUR:ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/GRCh38_reference_genome/GRCh38_full_analysis_set_plus_decoy_hla.fa\tSP:Human",
