@@ -19,6 +19,10 @@ Resources:
       Tags:
         "Creator": "brainstorm"
         "Deploy": "sam"
+      Environment:
+        Variables:
+          BUCKET: "umccr-research-dev"
+          KEY: "htsget/htsnexus_test_NA12878.bam"
       Events:
         RootEvent:
           Type: Api
