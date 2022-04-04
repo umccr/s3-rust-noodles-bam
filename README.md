@@ -9,10 +9,25 @@ A previous lambda was written using the C-bindgen-based [rust-htslib](https://gi
 This README assumes the following prerequisites:
 
 1. You are already authenticated against AWS in your shell.
-1. [AWS SAM](https://aws.amazon.com/serverless/sam/) is properly installed.
+1. [AWS SAM][sam] is properly installed.
 1. You have a [functioning Rust(up) installation](https://rustup.rs/).
 1. You have adjusted the KEY, BUCKET, REGION constants in `main.rs`
 1. You have installed cargo-lambda and prerequisites via `cargo install cargo-lambda`.
+
+## Local run
+
+There's currently two supported ways to run the lambda locally: using [SAM][sam] and using [cargo-lambda][cargo-lambda].
+
+### With cargo-lambda
+
+Just run the following commands on **separate terminal sessions**:
+
+```
+$ cargo lambda start
+$ cargo lambda invoke bootstrap --data-file event.json
+```
+
+## Building and running Lambda in Docker
 
 Building and deploying the Rust lambda on ARM64 (Graviton2 instances) can be done via [SAM-CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html). But first you must build a docker image and build this example using that container based on upstream's `public.ecr.aws/sam/build-provided.al2:latest`:
 
@@ -22,9 +37,11 @@ $ sam build -c -u --skip-pull-image -bi provided.al2-rust
 $ sam deploy
 ```
 
-Debugging locally works using `sam local start-api`.
+### With SAM
 
-Then actually call the lambda through the API Gateway in production (found easily on API Gateway's dashboard):
+Debugging locally also works using `sam local start-api`.
+
+Then one can actually invoke the lambda through the API Gateway in production (found easily on API Gateway's dashboard):
 
 ```
 curl https://api.gateway.<RANDOM_AWS_ID>.domain.amazon.com/Prod
@@ -42,3 +59,6 @@ $ curl http://127.0.0.1:3000/
 "@CO\tFASTQ=ERR009378_1.fastq.gz",
 (...)
 ```
+
+[sam]: https://aws.amazon.com/serverless/sam/
+[cargo-lambda]: https://crates.io/crates/cargo-lambda
