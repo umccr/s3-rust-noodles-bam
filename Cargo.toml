@@ -22,10 +22,6 @@ noodles = { version = "0.21.0", features = ["bam", "sam"] }
 [dev-dependencies]
 s3-server = "0.2.0"
 
-[[ bin ]]
-name = "bootstrap"
-path = "src/main.rs"
-
 #[profile.release]
 #lto = true
 #opt-level = 'z'

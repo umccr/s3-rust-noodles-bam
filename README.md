@@ -24,7 +24,7 @@ Just run the following commands on **separate terminal sessions**:
 
 ```
 $ cargo lambda start
-$ cargo lambda invoke bootstrap --data-file event.json
+$ cargo lambda invoke s3-rust-noodles-bam --data-file event.json
 ```
 
 ## Building and running Lambda in Docker
