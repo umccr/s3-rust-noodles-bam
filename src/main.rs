@@ -5,9 +5,9 @@ static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 use bytes::Bytes;
 use std::io::{Cursor};
+use serde_json::{json, Value};
 
-use lambda_runtime::{ Context, Error };
-use lambda_http::{ handler, Body, Request, Response, IntoResponse };
+use lambda_runtime::{service_fn, LambdaEvent, Error};
 
 use aws_config::default_provider::credentials::DefaultCredentialsChain;
 use aws_sdk_s3 as s3;
@@ -28,21 +28,16 @@ const REGION: &str = "ap-southeast-2";
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    lambda_runtime::run(handler(bam_header_as_json)).await?;
+    let func = service_fn(bam_header_as_json);
+    lambda_runtime::run(func).await?;
     Ok(())
 }
 
-/// Turns header string into a JSON (poorly)
-/// see: https://github.com/brainstorm/s3-rust-htslib-bam/commit/9e7a2002e3d31ac40c87bdad59a4af371b26518f#commitcomment-48811697
-/// ... and ping me if you want to collaborate in serializing bioinformatics formats into Parquet, Arrow, etc... ;)
-async fn bam_header_as_json(req: Request, ctx: Context) -> Result<impl IntoResponse, Error> {
-    let header = s3_read_bam_header(req, ctx).await?;
+/// Turns header string into a JSON
+async fn bam_header_as_json(event: LambdaEvent<Value>) -> Result<Value, Error> {
+    let header = s3_read_bam_header(event).await?;
 
-    Ok(Response::builder()
-        .status(200)
-        .body(Body::from(header.to_string()))
-        .expect("Something went wrong reading the BAM file")
-    )
+    Ok(json!({ "message": format!("{}", header) }))
 }
 
 /// Fetches S3 object
@@ -75,7 +70,7 @@ async fn read_bam_header(bam_bytes: Bytes) -> Result<sam::Header, ParseError> {
 }
 
 /// Reads BAM header from returned S3 bytes
-async fn s3_read_bam_header(_event: Request, _: Context) -> Result<sam::Header, Error> {
+async fn s3_read_bam_header(_event: LambdaEvent<Value>) -> Result<sam::Header, Error> {
     let s3_object = stream_s3_object().await?;
     Ok(read_bam_header(s3_object).await?)
 }

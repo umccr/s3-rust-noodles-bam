@@ -2,7 +2,7 @@
 name = "s3-rust-noodles-bam"
 version = "0.2.2"
 authors = ["Roman Valls Guimera <brainstorm@nopcode.org>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 bytes = "1.1.0"
@@ -11,16 +11,16 @@ url = "2.2.2"
 serde = "^1"
 serde_derive = "^1"
 serde_json = "^1"
-lambda_http = { version = "0.4.1" }
-lambda_runtime = { version = "0.4.1" }
-aws-sdk-s3 = { git = "https://github.com/awslabs/aws-sdk-rust", tag = "v0.0.19-alpha" }
-aws-config = { git = "https://github.com/awslabs/aws-sdk-rust", tag = "v0.0.19-alpha" }
-tracing-subscriber = "0.2.25"
+lambda_http = { version = "0.5.1" }
+lambda_runtime = { version = "0.5.1" }
+aws-sdk-s3 = { version = "0.9.0" }
+aws-config = { version = "0.9.0" }
+tracing-subscriber = "0.3.10"
 tokio = { version = "1.12.0" }
-noodles = { version = "0.10.1", features = ["bam", "sam"] }
+noodles = { version = "0.21.0", features = ["bam", "sam"] }
 
 [dev-dependencies]
-s3-server = "0.1.0"
+s3-server = "0.2.0"
 
 [[ bin ]]
 name = "bootstrap"
