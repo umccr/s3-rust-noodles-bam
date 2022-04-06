@@ -9,3 +9,4 @@ samconfig.toml
 node_modules
 bootstrap
 Cargo.lock
+package-lock.json

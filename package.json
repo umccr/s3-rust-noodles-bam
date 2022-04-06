@@ -1,0 +1,5 @@
+{
+  "optionalDependencies": {
+    "rust.aws-cdk-lambda": "^1.1.3"
+  }
+}
