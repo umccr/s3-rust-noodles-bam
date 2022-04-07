@@ -1,20 +1,20 @@
 import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { RustFunction } from 'rust.aws-cdk-lambda';
+import { Architecture } from 'aws-cdk-lib/aws-lambda'
 
 export class ServerlessBioinformaticsStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
-        const bucket = new s3.Bucket(this, 'umccr-htsget', {
-            blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-            publicReadAccess: false,
+        const bucket = new s3.Bucket(this, 'umccr-research-dev', {
+            // blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+            // publicReadAccess: false,
         });
 
-        let myLambda = new RustFunction(this, 'HtsGet', {
-            functionName: 'htsget-rs',
+        let myLambda = new RustFunction(this, 'bam_header', {
+            functionName: 'bam_header',
             memorySize: 128,
             // Increase the max timeout slightly
             timeout: Duration.seconds(10),
@@ -28,6 +28,7 @@ export class ServerlessBioinformaticsStack extends Stack {
             // buildEnvironment: {
             //     MY_BUILD_ENV_VAR: 'Testing 123.',
             // },
+            architecture: Architecture.ARM_64
         });
 
         bucket.grantReadWrite(myLambda);
