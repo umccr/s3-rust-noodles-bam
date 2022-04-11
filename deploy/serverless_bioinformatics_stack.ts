@@ -2,7 +2,9 @@ import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { RustFunction } from 'rust.aws-cdk-lambda';
-import { Architecture } from 'aws-cdk-lib/aws-lambda'
+import { Architecture } from 'aws-cdk-lib/aws-lambda';
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+
 
 export class ServerlessBioinformaticsStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
@@ -13,7 +15,7 @@ export class ServerlessBioinformaticsStack extends Stack {
             // publicReadAccess: false,
         });
 
-        let myLambda = new RustFunction(this, 'bam_header', {
+        let bamLambda = new RustFunction(this, 'bam_header', {
             functionName: 'bam_header',
             memorySize: 128,
             // Increase the max timeout slightly
@@ -31,6 +33,9 @@ export class ServerlessBioinformaticsStack extends Stack {
             architecture: Architecture.ARM_64
         });
 
-        bucket.grantReadWrite(myLambda);
+        const api = new apigw.LambdaRestApi(this, 's3-get-bam-header', {
+            handler: bamLambda,
+            proxy: true,
+        });
     }
 }
