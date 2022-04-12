@@ -13,12 +13,11 @@ use aws_config::default_provider::credentials::DefaultCredentialsChain;
 use aws_sdk_s3 as s3;
 use s3::Region;
 
-// use tracing_subscriber::fmt::format::FmtSpan;
-// use tracing_subscriber::fmt::SubscriberBuilder;
-
 use noodles::bam;
 use noodles::sam;
 use crate::sam::header::ParseError;
+
+use s3_rust_noodles_bam::telemetry::{get_subscriber, init_subscriber};
 
 // Change these to your bucket, key and region
 const BUCKET: &str = "umccr-research-dev";
@@ -28,6 +27,9 @@ const REGION: &str = "ap-southeast-2";
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+    let subscriber = get_subscriber("lambda_bam_header".into(), "info".into(), std::io::stdout);
+    init_subscriber(subscriber);
+
     let func = service_fn(bam_header_as_json);
     lambda_runtime::run(func).await?;
     Ok(())
