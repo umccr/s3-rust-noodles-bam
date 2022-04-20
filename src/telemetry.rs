@@ -9,7 +9,7 @@ use tracing_subscriber::{layer::SubscriberExt, EnvFilter, Registry};
 ///
 /// We are using `impl Subscriber` as return type to avoid having to spell out the actual
 /// type of the returned subscriber, which is indeed quite complex.
-pub fn get_subscriber<'a>(
+pub fn get_subscriber(
     _name: String,
     env_filter: String,
     _sink: impl Send + Sync + 'static,

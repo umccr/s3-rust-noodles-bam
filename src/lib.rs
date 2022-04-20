@@ -24,7 +24,7 @@ pub async fn stream_s3_object() -> Result<Bytes, Error> {
 
 /// Fetches S3 object with given params
 pub async fn stream_s3_object_with_params(bucket: String, key: String, region: Option<String>) -> Result<Bytes, Error> {
-    let region_ = Region::new(region.unwrap_or(REGION.to_string()));
+    let region_ = Region::new(region.unwrap_or_else(|| REGION.to_string()));
 
     let creds_provider = DefaultCredentialsChain::builder()
         .region(region_.clone())
@@ -40,7 +40,7 @@ pub async fn stream_s3_object_with_params(bucket: String, key: String, region: O
     event!(Level::INFO, "Getting S3 object bytes...");
     println!("Getting S3 object bytes...");
 
-    // Preflight check -- like file size, DEEP_ARCHIVE restore staff, etc... :)
+    // Preflight check -- like file size, DEEP_ARCHIVE restore stuff, etc... :)
     let head_req = client
         .head_object()
         .bucket(bucket.clone())
@@ -50,7 +50,7 @@ pub async fn stream_s3_object_with_params(bucket: String, key: String, region: O
 
     if head_req.content_length > FILE_SIZE_LIMIT_IN_BYTES {
         let msg = format!("Oh shoot, file too large {} bytes to download! We should ideally \
-        be slicing it with Noodle! Sorry, try something < 5MB, pls!", head_req.content_length);
+        be slicing it with Noodles! Sorry, try something < 5MB, please!", head_req.content_length);
         println!("{}", msg);
         return Err(Error::from(msg));
     }
@@ -63,7 +63,7 @@ pub async fn stream_s3_object_with_params(bucket: String, key: String, region: O
 
     let data = resp.body.collect().await?;
 
-    return Ok(data.into_bytes());
+    Ok(data.into_bytes())
 }
 
 /// Reads BAM S3 object header
@@ -74,5 +74,5 @@ pub async fn read_bam_header(bam_bytes: Bytes) -> Result<sam::Header, ParseError
 
     // ... and read the header
     let mut reader = bam::Reader::new(s3_obj_buffer);
-    reader.read_header().unwrap().parse()//?.parse::<sam::Header>()
+    reader.read_header().unwrap().parse()
 }

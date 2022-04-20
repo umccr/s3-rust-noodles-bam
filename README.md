@@ -30,34 +30,29 @@ cargo lambda start
 
 Invoke Lambda:
 ```
-cargo lambda invoke s3-rust-noodles-bam --data-file event.json | jq
+cargo lambda invoke s3-rust-noodles-bam --data-file events/event.json | jq
 cargo lambda invoke s3-rust-noodles-bam --data-ascii '{"bam": "s3://some/key.bam"}' | jq
 ```
 
 Invoke Http Lambda with APIGateway mock event:
 
 ```
-cargo lambda invoke apigw --data-file mock_event.json | jq
-cargo lambda invoke apigw --data-file mock_event_big.json | jq
-cargo lambda invoke apigw --data-file mock_event_empty.json | jq
+cargo lambda invoke apigw --data-file events/mock_event.json | jq
+cargo lambda invoke apigw --data-file events/mock_event_big.json | jq
+cargo lambda invoke apigw --data-file events/mock_event_empty.json | jq
 ```
 
 ## Deployment
 
 Install CDK dependencies:
-```
-cdk version
- 2.20.0 (build 738ef49)
 
-npm install
+```
+npm install cdk
 ```
 
 Build fresh and deploy:
 ```
 cargo clean
-
-export AWS_PROFILE=dev
-
 cdk diff
 cdk deploy
 ```
@@ -70,14 +65,14 @@ Call Main Lambda Function:
 aws lambda invoke --function-name <s3-rust-noodles-bam-...> out.json
 ```
 
-> NOTE: `awscurl` still need cred file so do like so `yawsso -p dev` 
+> NOTE: `awscurl` requires AWS credentials
 
 Call Endpoint:
 ```
-awscurl -H "Accept: application/json" --profile dev --region ap-southeast-2 "https://<my-apigw-ep>.execute-api.ap-southeast-2.amazonaws.com/prod/" | jq
+awscurl -H "Accept: application/json" --region ap-southeast-2 "https://<my-apigw-ep>.execute-api.ap-southeast-2.amazonaws.com/prod/" | jq
 ```
 
 Call Endpoint with POST payload:
 ```
-awscurl -X POST -d "@event_big.json" -H "Content-Type: application/json" --profile dev --region ap-southeast-2 "https://<my-apigw-ep>.execute-api.ap-southeast-2.amazonaws.com/prod/" | jq
+awscurl -X POST -d "@event_big.json" -H "Content-Type: application/json" --region ap-southeast-2 "https://<my-apigw-ep>.execute-api.ap-southeast-2.amazonaws.com/prod/" | jq
 ```
