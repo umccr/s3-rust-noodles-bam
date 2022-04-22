@@ -38,7 +38,6 @@ pub async fn stream_s3_object_with_params(bucket: String, key: String, region: O
     let client = Client::from_conf(conf);
 
     event!(Level::INFO, "Getting S3 object bytes...");
-    println!("Getting S3 object bytes...");
 
     // Preflight check -- like file size, DEEP_ARCHIVE restore stuff, etc... :)
     let head_req = client
