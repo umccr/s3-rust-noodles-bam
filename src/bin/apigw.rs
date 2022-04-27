@@ -23,7 +23,7 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
-async fn get_bam_header(request: Request) -> lambda_http::http::Result<Response<Body>> {
+async fn get_bam_header(request: Request) -> Result<Response<Body>, Error> {
     let payload: EventPayload = request.payload()
         .unwrap_or(None)
         .unwrap_or_default();
@@ -31,9 +31,9 @@ async fn get_bam_header(request: Request) -> lambda_http::http::Result<Response<
     if payload.bam.is_empty() || !payload.bam.starts_with("s3://") {
         event!(Level::INFO, "get_bam_header with default BAM");
         
-        Response::builder()
+        Ok(Response::builder()
             .status(StatusCode::IM_A_TEAPOT)
-            .body(lambda_http::Body::Text(json!({"message": "error"}).to_string()))
+            .body(lambda_http::Body::Text(json!({"message": "error"}).to_string())).expect("Should not be invalid response."))
     } else {
         event!(Level::INFO, "get_bam_header with payload BAM");
 
@@ -49,8 +49,8 @@ async fn get_bam_header(request: Request) -> lambda_http::http::Result<Response<
             payload.region,
         ).await?;
 
-        Response::builder()
+        Ok(Response::builder()
             .status(StatusCode::BAD_REQUEST)
-            .body(lambda_http::Body::Text(json!({ "message": bam_header}).to_string()))
+            .body(lambda_http::Body::Text(json!({ "message": bam_header}).to_string())).expect("Should not be invalid response."))
     }
 }
