@@ -23,7 +23,7 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
-async fn get_bam_header(request: Request) -> Result<Response<Body>, Error> {
+async fn get_bam_header(request: Request) -> lambda_http::http::Result<Response<Body>> {
     let payload: EventPayload = request.payload()
         .unwrap_or(None)
         .unwrap_or_default();
