@@ -30,10 +30,10 @@ async fn get_bam_header(request: Request) -> Result<Response<Body>, Error> {
 
     if payload.bam.is_empty() || !payload.bam.starts_with("s3://") {
         event!(Level::INFO, "get_bam_header with default BAM");
-        
         Response::builder()
             .status(StatusCode::BAD_REQUEST)
-            .body(lambda_http::Body::Text(json!({"message": "error"}).to_string())).map_err(|err| Error::from(err.to_string()))
+            .body(lambda_http::Body::Text(json!({"message": "error, BAM file is empty?"}).to_string()))
+            .map_err(|err| Error::from(err.to_string()))
     } else {
         event!(Level::INFO, "get_bam_header with payload BAM");
 
@@ -51,6 +51,7 @@ async fn get_bam_header(request: Request) -> Result<Response<Body>, Error> {
 
         Response::builder()
             .status(StatusCode::OK)
-            .body(lambda_http::Body::Text(json!({ "message": bam_header}).to_string())).map_err(|err| Error::from(err.to_string()))
+            .body(lambda_http::Body::Text(json!({ "message": bam_header}).to_string()))
+            .map_err(|err| Error::from(err.to_string()))
     }
 }

@@ -28,7 +28,7 @@ Start Local Server:
 cargo lambda start
 ```
 
-Invoke Lambda:
+Invoke Lambda with event or by pointing it to BAM file:
 ```
 cargo lambda invoke s3-rust-noodles-bam --data-file events/event.json | jq
 cargo lambda invoke s3-rust-noodles-bam --data-ascii '{"bam": "s3://some/key.bam"}' | jq
