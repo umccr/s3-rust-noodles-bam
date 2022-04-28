@@ -32,7 +32,7 @@ async fn get_bam_header(request: Request) -> Result<Response<Body>, Error> {
         event!(Level::INFO, "get_bam_header with default BAM");
         
         Response::builder()
-            .status(StatusCode::IM_A_TEAPOT)
+            .status(StatusCode::BAD_REQUEST)
             .body(lambda_http::Body::Text(json!({"message": "error"}).to_string())).map_err(|err| Error::from(err.to_string()))
     } else {
         event!(Level::INFO, "get_bam_header with payload BAM");
@@ -50,7 +50,7 @@ async fn get_bam_header(request: Request) -> Result<Response<Body>, Error> {
         ).await?;
 
         Response::builder()
-            .status(StatusCode::BAD_REQUEST)
+            .status(StatusCode::OK)
             .body(lambda_http::Body::Text(json!({ "message": bam_header}).to_string())).map_err(|err| Error::from(err.to_string()))
     }
 }
