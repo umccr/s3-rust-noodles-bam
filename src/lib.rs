@@ -1,5 +1,3 @@
-use std::{io::{Cursor, BufRead}, sync::Arc};
-
 use aws_config::default_provider::credentials::DefaultCredentialsChain;
 use aws_sdk_s3::{Client, Config, Region, types::ByteStream};
 use lambda_runtime::Error;
@@ -10,8 +8,6 @@ use tracing::{event, Level};
 use crate::sam::header::ParseError;
 
 pub mod telemetry;
-
-const FILE_SIZE_LIMIT_IN_BYTES: i64 = 8596799;  // ~8.6 MB
 
 const BUCKET: &str = "umccr-research-dev";
 const KEY: &str = "htsget/htsnexus_test_NA12878.bam";
@@ -46,13 +42,6 @@ pub async fn stream_s3_object_with_params(bucket: String, key: String, region: O
         .key(key.clone())
         .send()
         .await?;
-
-    if head_req.content_length > FILE_SIZE_LIMIT_IN_BYTES {
-        let msg = format!("Oh shoot, file too large {} bytes to download! We should ideally \
-        be slicing it with Noodles! Sorry, try something < 5MB, please!", head_req.content_length);
-        println!("{}", msg);
-        return Err(Error::from(msg));
-    }
 
     let resp = client
         .get_object()
