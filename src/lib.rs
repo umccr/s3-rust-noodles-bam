@@ -1,8 +1,7 @@
 use std::{io::{Cursor, BufRead}, sync::Arc};
 
 use aws_config::default_provider::credentials::DefaultCredentialsChain;
-use aws_sdk_s3::{Client, Config, Region};
-use bytes::Bytes;
+use aws_sdk_s3::{Client, Config, Region, types::ByteStream};
 use lambda_runtime::Error;
 use noodles::{sam};
 use noodles_bam as bam;
@@ -19,12 +18,12 @@ const KEY: &str = "htsget/htsnexus_test_NA12878.bam";
 const REGION: &str = "ap-southeast-2";
 
 /// Fetches S3 object using default
-pub async fn stream_s3_object() -> Result<Bytes, Error> {
+pub async fn stream_s3_object() -> Result<ByteStream, Error> {
     return stream_s3_object_with_params(BUCKET.to_string(), KEY.to_string(), None).await;
 }
 
 /// Fetches S3 object with given params
-pub async fn stream_s3_object_with_params(bucket: String, key: String, region: Option<String>) -> Result<Bytes, Error> {
+pub async fn stream_s3_object_with_params(bucket: String, key: String, region: Option<String>) -> Result<ByteStream, Error> {
     let region_ = Region::new(region.unwrap_or_else(|| REGION.to_string()));
 
     let creds_provider = DefaultCredentialsChain::builder()
@@ -61,14 +60,14 @@ pub async fn stream_s3_object_with_params(bucket: String, key: String, region: O
         .key(key.clone())
         .send().await?;
 
-    let data = resp.body.collect().await?;
+    let data = resp.body;
 
-    Ok(data.into_bytes())
+    Ok(data)
 }
 
 /// Reads BAM S3 object header
-pub async fn read_bam_header(bam_bytes: Bytes) -> Result<sam::Header, ParseError> {
-    let mut reader = bam::AsyncReader::from(bam_bytes);
-    let header = reader.read_header().await?;
-    header
+pub async fn read_bam_header(bam_bytestream: ByteStream) -> Result<sam::Header, ParseError> {
+
+    let mut reader = bam::AsyncReader::from(bam_bytestream);
+    reader.read_header().await?
 }
