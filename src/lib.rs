@@ -1,10 +1,11 @@
-use std::io::Cursor;
+use std::{io::{Cursor, BufRead}, sync::Arc};
 
 use aws_config::default_provider::credentials::DefaultCredentialsChain;
 use aws_sdk_s3::{Client, Config, Region};
 use bytes::Bytes;
 use lambda_runtime::Error;
-use noodles::{bam, sam};
+use noodles::{sam};
+use noodles_bam as bam;
 use tracing::{event, Level};
 
 use crate::sam::header::ParseError;
@@ -67,11 +68,7 @@ pub async fn stream_s3_object_with_params(bucket: String, key: String, region: O
 
 /// Reads BAM S3 object header
 pub async fn read_bam_header(bam_bytes: Bytes) -> Result<sam::Header, ParseError> {
-    let mut s3_obj_buffer = Cursor::new(bam_bytes.to_vec());
-    // Rewind buffer Cursor after writing, so that next reader can consume header data...
-    s3_obj_buffer.set_position(0);
-
-    // ... and read the header
-    let mut reader = bam::Reader::new(s3_obj_buffer);
-    reader.read_header().unwrap().parse()
+    let mut reader = bam::AsyncReader::from(bam_bytes);
+    let header = reader.read_header().await?;
+    header
 }
