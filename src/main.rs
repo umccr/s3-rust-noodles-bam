@@ -34,5 +34,5 @@ async fn s3_read_bam_header(_event: LambdaEvent<Value>) -> Result<sam::Header, E
     // TODO parse _event and route to backend - stream_s3_object() or stream_s3_object_with_params()
     //  accordingly based on event payload
     let s3_object = stream_s3_object().await?;
-    Ok(read_bam_header(s3_object).await?)
+    Ok(read_bam_header(s3_object).await.unwrap().parse().unwrap())
 }

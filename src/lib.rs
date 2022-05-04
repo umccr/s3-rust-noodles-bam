@@ -1,9 +1,12 @@
+use std::io::ErrorKind;
 use aws_config::default_provider::credentials::DefaultCredentialsChain;
 use aws_sdk_s3::{Client, Config, Region, types::ByteStream};
 use lambda_runtime::Error;
 use noodles::{sam};
 use noodles_bam as bam;
+use tokio_util::io::StreamReader;
 use tracing::{event, Level};
+use futures_util::stream::TryStreamExt;
 
 use crate::sam::header::ParseError;
 
@@ -55,8 +58,9 @@ pub async fn stream_s3_object_with_params(bucket: String, key: String, region: O
 }
 
 /// Reads BAM S3 object header
-pub async fn read_bam_header(bam_bytestream: ByteStream) -> Result<sam::Header, ParseError> {
-
-    let mut reader = bam::AsyncReader::from(bam_bytestream);
-    reader.read_header().await?
+pub async fn read_bam_header(bam_bytestream: ByteStream) -> std::io::Result<String> {
+    let map_err = bam_bytestream.map_err(|err| std::io::Error::new(ErrorKind::Other, err));
+    let stream_reader = StreamReader::new(map_err);
+    let mut reader = bam::AsyncReader::from(stream_reader);
+    reader.read_header().await
 }
