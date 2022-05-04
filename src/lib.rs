@@ -2,13 +2,10 @@ use std::io::ErrorKind;
 use aws_config::default_provider::credentials::DefaultCredentialsChain;
 use aws_sdk_s3::{Client, Config, Region, types::ByteStream};
 use lambda_runtime::Error;
-use noodles::{sam};
 use noodles_bam as bam;
 use tokio_util::io::StreamReader;
 use tracing::{event, Level};
 use futures_util::stream::TryStreamExt;
-
-use crate::sam::header::ParseError;
 
 pub mod telemetry;
 
@@ -39,12 +36,12 @@ pub async fn stream_s3_object_with_params(bucket: String, key: String, region: O
     event!(Level::INFO, "Getting S3 object bytes...");
 
     // Preflight check -- like file size, DEEP_ARCHIVE restore stuff, etc... :)
-    let head_req = client
-        .head_object()
-        .bucket(bucket.clone())
-        .key(key.clone())
-        .send()
-        .await?;
+    // let head_req = client
+    //     .head_object()
+    //     .bucket(bucket.clone())
+    //     .key(key.clone())
+    //     .send()
+    //     .await?;
 
     let resp = client
         .get_object()
