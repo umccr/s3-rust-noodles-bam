@@ -9,21 +9,70 @@ A previous lambda was written using the C-bindgen-based [rust-htslib](https://gi
 This README assumes the following prerequisites:
 
 1. You are already authenticated against AWS in your shell.
-1. You have a [functioning Rust(up) installation](https://rustup.rs/).
-1. You have adjusted the KEY, BUCKET, REGION constants in `main.rs`
-1. You have installed cargo-lambda and prerequisites via `cargo install cargo-lambda`.
+2. You have a [functioning Rust(up) installation](https://rustup.rs/).
+3. You have adjusted the KEY, BUCKET, REGION constants in `main.rs`
+4. You have installed cargo-lambda and prerequisites via `cargo install cargo-lambda`.
+5. You should prepare [small test BAM](https://github.com/umccr/ega-submit/tree/master/test) in some S3 bucket. See `event.json`
 
-## Local run
+## Local Run
 
-Just run the following commands on **separate terminal sessions**:
+Just run the following commands on **separate terminal sessions**.
+
+Build Local:
+```
+cargo build
+```
+
+Start Local Server:
+```
+cargo lambda start
+```
+
+Invoke Lambda with event or by pointing it to BAM file:
+```
+cargo lambda invoke s3-rust-noodles-bam --data-file events/event.json | jq
+cargo lambda invoke s3-rust-noodles-bam --data-ascii '{"bam": "s3://some/key.bam"}' | jq
+```
+
+Invoke Http Lambda with APIGateway mock event:
 
 ```
-$ cargo lambda start
-$ cargo lambda invoke s3-rust-noodles-bam --data-file event.json
+cargo lambda invoke apigw --data-file events/mock_event.json | jq
+cargo lambda invoke apigw --data-file events/mock_event_big.json | jq
+cargo lambda invoke apigw --data-file events/mock_event_empty.json | jq
 ```
 
 ## Deployment
 
+Install CDK dependencies:
+
 ```
-$ cdk deploy
+npm install cdk
+```
+
+Build fresh and deploy:
+```
+cargo clean
+cdk diff
+cdk deploy
+```
+
+
+## Testing
+
+Call Main Lambda Function:
+```
+aws lambda invoke --function-name <s3-rust-noodles-bam-...> out.json
+```
+
+> NOTE: `awscurl` requires AWS credentials
+
+Call Endpoint:
+```
+awscurl -H "Accept: application/json" --region ap-southeast-2 "https://<my-apigw-ep>.execute-api.ap-southeast-2.amazonaws.com/prod/" | jq
+```
+
+Call Endpoint with POST payload:
+```
+awscurl -X POST -d "@event_big.json" -H "Content-Type: application/json" --region ap-southeast-2 "https://<my-apigw-ep>.execute-api.ap-southeast-2.amazonaws.com/prod/" | jq
 ```

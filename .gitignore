@@ -1,12 +1,15 @@
-target
+.DS_Store
+Cargo.lock
+target/
 *.zip
-cdk.out
-.idea
+cdk.out/
+.idea/
 .aws-sam
 .nvmrc
 response.json
 samconfig.toml
-node_modules
+node_modules/
 bootstrap
-Cargo.lock
-package-lock.json
+
+# Rust lambda build directory
+.build/

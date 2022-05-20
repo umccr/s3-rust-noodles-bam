@@ -1,30 +1,15 @@
 extern crate jemallocator;
 
-#[global_allocator]
-static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
-
-use bytes::Bytes;
-use std::io::{Cursor};
-use serde_json::{json, Value};
-
-use lambda_runtime::{service_fn, LambdaEvent, Error};
-
-use aws_config::default_provider::credentials::DefaultCredentialsChain;
-use aws_sdk_s3 as s3;
-use s3::Region;
-
-use noodles::bam;
+use lambda_runtime::{Error, LambdaEvent, service_fn};
 use noodles::sam;
-use crate::sam::header::ParseError;
+use serde_json::{json, Value};
+use tracing::{event, Level};
 
-use tracing::{event, span, Level};
+use s3_rust_noodles_bam::{read_bam_header, stream_s3_object};
 use s3_rust_noodles_bam::telemetry::{get_subscriber, init_subscriber};
 
-// Change these to your bucket, key and region
-const BUCKET: &str = "umccr-research-dev";
-const KEY: &str = "htsget/htsnexus_test_NA12878.bam";
-const REGION: &str = "ap-southeast-2";
-
+#[global_allocator]
+static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -44,38 +29,11 @@ async fn bam_header_as_json(event: LambdaEvent<Value>) -> Result<Value, Error> {
     Ok(json!({ "message": format!("{}", header) }))
 }
 
-/// Fetches S3 object
-async fn stream_s3_object() -> Result<Bytes, Error> {
-    let creds_provider = DefaultCredentialsChain::builder()
-            .region(Region::new(REGION))
-            .build().await;
-
-    let conf = s3::Config::builder()
-        .region(Region::new(REGION))
-        .credentials_provider(creds_provider)
-        .build();
-    let client = s3::Client::from_conf(conf);
-
-    event!(Level::INFO, "Getting S3 object bytes...");
-    let resp = client.get_object().bucket(BUCKET).key(KEY).send().await?;
-    let data = resp.body.collect().await?;
-
-    return Ok(data.into_bytes());
-}
-
-/// Reads BAM S3 object header
-async fn read_bam_header(bam_bytes: Bytes) -> Result<sam::Header, ParseError> {
-    let mut s3_obj_buffer = Cursor::new(bam_bytes.to_vec());
-    // Rewind buffer Cursor after writing, so that next reader can consume header data...
-    s3_obj_buffer.set_position(0);
-
-    // ... and read the header
-    let mut reader = bam::Reader::new(s3_obj_buffer);
-    reader.read_header().unwrap().parse()//?.parse::<sam::Header>()
-}
-
 /// Reads BAM header from returned S3 bytes
 async fn s3_read_bam_header(_event: LambdaEvent<Value>) -> Result<sam::Header, Error> {
+    // TODO parse _event and route to backend - stream_s3_object() or stream_s3_object_with_params()
+    //  accordingly based on event payload
     let s3_object = stream_s3_object().await?;
-    Ok(read_bam_header(s3_object).await?)
+    let header = read_bam_header(s3_object).await?.parse()?;
+    Ok(header)
 }
